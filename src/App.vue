@@ -1,30 +1,43 @@
-<script setup>
-import HelloWorld from './components/HelloWorld.vue'
+<script>
+import SearchBar from "./components/SearchBar.vue";
+import PokeDetail from "./components/PokeDetail.vue";
+// Importo il servizio per effettuare la chiamata API
+import PokemonService from "./PokemonService.js";
+export default {
+  data() {
+    return {
+      pokemonList: [],
+      pokemonCatched: [],
+    };
+  },
+  components: { SearchBar, PokeDetail },
+  methods: {
+    // Metodo che utilizza il servizio Pokemon
+    // per chiamare l'API e salvare il risultato
+    // in una variabile
+    fetchPokemon(pokeToSearch) {
+      PokemonService.searchPokemon(pokeToSearch)
+        .then((response) => {
+          console.log(response);
+          this.pokemonList = response;
+        })
+        .catch((error) => {
+          console.error("Errore durante la ricerca dei Pokemon:", error);
+        });
+    },
+    catchPokemon(pokeDetails) {
+      this.pokemonCatched.push(pokeDetails);
+      console.log(this.pokemonCatched);
+    },
+  },
+};
 </script>
 
 <template>
-  <div>
-    <a href="https://vitejs.dev" target="_blank">
-      <img src="/vite.svg" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://vuejs.org/" target="_blank">
-      <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-    </a>
+  <div class="container">
+    <SearchBar @searchPokemon="fetchPokemon" />
+    <PokeDetail :pokemonItem="pokemonList" @catch="catchPokemon" />
   </div>
-  <HelloWorld msg="Vite + Vue" />
 </template>
 
-<style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
-}
-</style>
+<style lang="scss" scoped></style>
